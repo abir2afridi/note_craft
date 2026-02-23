@@ -50,11 +50,11 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'your-android-api-key',
-    appId: 'your-android-app-id',
-    messagingSenderId: 'your-sender-id',
-    projectId: 'your-project-id',
-    storageBucket: 'your-project-id.appspot.com',
+    apiKey: 'AIzaSyATAN6ZFLs7__Bh6cTkr1HKzTX2vivg_LY',
+    appId: '1:555017411804:android:2b3e410f694b4ae5266819',
+    messagingSenderId: '555017411804',
+    projectId: 'note2craft',
+    storageBucket: 'note2craft.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(

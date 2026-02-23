@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/foundation.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 
@@ -9,10 +10,7 @@ import '../datasources/remote/remote_data_source.dart';
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final RemoteDataSource _remoteDataSource = RemoteDataSource();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    serverClientId:
-        '555017411804-smeb60af0frhpdrcl7rpsi2n5ur15qha.apps.googleusercontent.com',
-  );
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
 
   @override
   Stream<UserEntity?> get authStateChanges => _firebaseAuth
@@ -27,19 +25,30 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<UserEntity?> signInWithGoogle() async {
     try {
+      debugPrint('GOOGLE SIGN-IN: Starting sign-in process...');
+
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return null;
+      if (googleUser == null) {
+        debugPrint('GOOGLE SIGN-IN: User cancelled sign-in');
+        return null;
+      }
+
+      debugPrint('GOOGLE SIGN-IN: Got Google user: ${googleUser.email}');
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+      debugPrint('GOOGLE SIGN-IN: Got auth tokens');
+
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
+      debugPrint('GOOGLE SIGN-IN: Creating Firebase credential...');
       final userCredential = await _firebaseAuth.signInWithCredential(
         credential,
       );
+      debugPrint('GOOGLE SIGN-IN: Firebase sign-in successful');
 
       if (userCredential.user != null) {
         final entity = UserEntity.fromFirebaseUser(userCredential.user!);
@@ -51,10 +60,13 @@ class AuthRepositoryImpl implements AuthRepository {
           'photoUrl': entity.photoUrl,
           'lastLogin': FieldValue.serverTimestamp(),
         });
+        debugPrint('GOOGLE SIGN-IN: Profile saved to Firestore');
         return entity;
       }
       return null;
     } catch (e) {
+      debugPrint('GOOGLE SIGN-IN ERROR: $e');
+      debugPrint('GOOGLE SIGN-IN ERROR TYPE: ${e.runtimeType}');
       rethrow;
     }
   }

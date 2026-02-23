@@ -65,8 +65,8 @@ dependencies:
   lottie: ^3.3.2
   flutter_markdown: ^0.7.7+1
   
-  # Notifications
-  flutter_local_notifications: ^17.2.2
+  # Notifications (temporarily commented for build fix)
+  # flutter_local_notifications: ^16.3.2
 
 dev_dependencies:
   flutter_test:

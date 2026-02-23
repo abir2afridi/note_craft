@@ -6,126 +6,210 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.auto_awesome_rounded,
-                  size: 10,
-                  color: Theme.of(context).colorScheme.primary,
+      backgroundColor: theme.colorScheme.surface,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 200,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      theme.colorScheme.primary,
+                      theme.colorScheme.tertiary,
+                    ],
+                  ),
                 ),
-                const SizedBox(width: 4),
+                child: Center(
+                  child: Icon(
+                    Icons.auto_awesome_rounded,
+                    size: 80,
+                    color: theme.colorScheme.onPrimary.withValues(alpha: 0.2),
+                  ),
+                ),
+              ),
+              title: Text(
+                'STUDIO',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2,
+                ),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary,
+                        borderRadius: BorderRadius.circular(32),
+                        boxShadow: [
+                          BoxShadow(
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.3,
+                            ),
+                            blurRadius: 30,
+                            offset: const Offset(0, 15),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.edit_note_rounded,
+                        size: 70,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  Center(
+                    child: Column(
+                      children: [
+                        Text(
+                          AppConstants.appName,
+                          style: theme.textTheme.displaySmall?.copyWith(
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -1,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            'Version ${AppConstants.appVersion}',
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: theme.colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  _buildSectionHeader(theme, 'What is Note Craft?'),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Note Craft is a premium, minimal note-taking experience designed for clarity and focus. Built with state-of-the-art Flutter architecture.',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      height: 1.6,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  _buildSectionHeader(theme, 'Premium Features'),
+                  const SizedBox(height: 16),
+                  _buildFeatureTile(
+                    theme,
+                    Icons.offline_bolt_rounded,
+                    'Offline First',
+                    'Your notes are always accessible, even without internet.',
+                  ),
+                  _buildFeatureTile(
+                    theme,
+                    Icons.palette_rounded,
+                    'Vibrant Themes',
+                    'A rich collection of curated color palettes and wallpapers.',
+                  ),
+                  _buildFeatureTile(
+                    theme,
+                    Icons.security_rounded,
+                    'Secure & Private',
+                    'Your data stays yours, with local-first storage.',
+                  ),
+                  const SizedBox(height: 48),
+                  Center(
+                    child: Opacity(
+                      opacity: 0.5,
+                      child: Text(
+                        '© 2026 NOTE CRAFT\nBuilt with passion and precision.',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.labelMedium,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(ThemeData theme, String title) {
+    return Text(
+      title.toUpperCase(),
+      style: theme.textTheme.labelLarge?.copyWith(
+        fontWeight: FontWeight.w900,
+        letterSpacing: 1.5,
+        color: theme.colorScheme.primary,
+      ),
+    );
+  }
+
+  Widget _buildFeatureTile(
+    ThemeData theme,
+    IconData icon,
+    String title,
+    String subtitle,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.5,
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(icon, color: theme.colorScheme.primary),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
-                  'NOTE CRAFT',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.2,
+                  title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
             ),
-            const Text(
-              'About',
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                letterSpacing: -0.5,
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
-        elevation: 0,
-        centerTitle: false,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // App Icon
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Icon(
-                Icons.note_alt,
-                size: 50,
-                color: Colors.black87,
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // App Name and Version
-            Text(
-              AppConstants.appName,
-              style: Theme.of(
-                context,
-              ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Version ${AppConstants.appVersion}',
-              style: TextStyle(color: Colors.grey[600], fontSize: 16),
-            ),
-
-            const SizedBox(height: 32),
-
-            // Description
-            Text(
-              'A Google Keep-inspired note-taking app built with Flutter. '
-              'Capture your thoughts, organize with labels, and access your notes anywhere.',
-              style: TextStyle(
-                color: Colors.grey[700],
-                fontSize: 16,
-                height: 1.5,
-              ),
-              textAlign: TextAlign.center,
-            ),
-
-            const SizedBox(height: 32),
-
-            // Features
-            const ListTile(
-              leading: Icon(Icons.check_circle, color: Colors.green),
-              title: Text('Offline-first architecture'),
-            ),
-            const ListTile(
-              leading: Icon(Icons.check_circle, color: Colors.green),
-              title: Text('Material 3 design'),
-            ),
-            const ListTile(
-              leading: Icon(Icons.check_circle, color: Colors.green),
-              title: Text('Text and checklist notes'),
-            ),
-            const ListTile(
-              leading: Icon(Icons.check_circle, color: Colors.green),
-              title: Text('Label organization'),
-            ),
-            const ListTile(
-              leading: Icon(Icons.check_circle, color: Colors.green),
-              title: Text('Dark mode support'),
-            ),
-
-            const Spacer(),
-
-            // Copyright
-            Text(
-              '© 2026 NoteKeeper\nBuilt with ❤️ using Flutter',
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

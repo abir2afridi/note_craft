@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/auth_provider.dart';
 import '../../core/constants/app_constants.dart';
 
@@ -43,6 +44,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ? e.toString().split('] ').last
             : e.toString();
       });
+
+      // Show more helpful error message for API exception 10
+      if (e.toString().contains('apiException :10')) {
+        setState(() {
+          _errorMessage =
+              'Google Sign-In configuration error. Please use "Skip for now" option.';
+        });
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -50,8 +59,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  void _skipLogin() {
+  void _skipLogin() async {
     ref.read(isGuestProvider.notifier).setGuestMode(true);
+
+    // Save guest mode preference
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('was_guest', true);
+
     context.go('/home');
   }
 

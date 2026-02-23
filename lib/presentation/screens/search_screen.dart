@@ -229,7 +229,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   Widget _buildEmptyState(bool isNoResults) {
     final theme = Theme.of(context);
-    return Center(
+    return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Column(
@@ -258,8 +258,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 fontWeight: FontWeight.w900,
                 letterSpacing: -0.5,
               ),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Text(
               isNoResults
                   ? "We couldn't find any matches. Try different keywords."
@@ -267,7 +268,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
-                height: 1.5,
               ),
             ),
           ],
@@ -293,24 +293,38 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       itemCount: notes.length,
       itemBuilder: (context, index) {
         final note = notes[index];
-        return OpenContainer(
-          openBuilder: (context, closedContainer) =>
-              NoteEditorScreen(noteId: note.id),
-          closedBuilder: (context, openContainer) => NoteCard(
-            note: note,
-            labelLookup: labelMap,
-            defaultWallpaper: defaultWallpaper,
-            onTap: openContainer,
-          ),
-          tappable: false,
-          closedElevation: 0,
-          openElevation: 0,
-          transitionDuration: const Duration(milliseconds: 650),
-          openShape: const RoundedRectangleBorder(),
-          closedColor: Colors.transparent,
-          openColor: Theme.of(context).colorScheme.surface,
-          closedShape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
+        return TweenAnimationBuilder<double>(
+          duration: Duration(milliseconds: 400 + (index * 100)),
+          tween: Tween(begin: 0.0, end: 1.0),
+          curve: Curves.easeOutCubic,
+          builder: (context, value, child) {
+            return Opacity(
+              opacity: value,
+              child: Transform.translate(
+                offset: Offset(0, 30 * (1 - value)),
+                child: child,
+              ),
+            );
+          },
+          child: OpenContainer(
+            openBuilder: (context, closedContainer) =>
+                NoteEditorScreen(noteId: note.id),
+            closedBuilder: (context, openContainer) => NoteCard(
+              note: note,
+              labelLookup: labelMap,
+              defaultWallpaper: defaultWallpaper,
+              onTap: openContainer,
+            ),
+            tappable: false,
+            closedElevation: 0,
+            openElevation: 0,
+            transitionDuration: const Duration(milliseconds: 650),
+            openShape: const RoundedRectangleBorder(),
+            closedColor: Colors.transparent,
+            openColor: Theme.of(context).colorScheme.surface,
+            closedShape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
           ),
         );
       },

@@ -78,6 +78,16 @@ class NoteCard extends StatelessWidget {
               duration: const Duration(milliseconds: 300),
               decoration: BoxDecoration(
                 color: hasWallpaper ? Colors.black : backgroundColor,
+                gradient: !hasWallpaper
+                    ? LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          backgroundColor,
+                          backgroundColor.withValues(alpha: 0.8),
+                        ],
+                      )
+                    : null,
                 image: hasWallpaper
                     ? DecorationImage(
                         image: AssetImage(wallpaperPath),
@@ -91,8 +101,8 @@ class NoteCard extends StatelessWidget {
                 border: Border.all(
                   color: hasWallpaper
                       ? Colors.white.withValues(alpha: 0.1)
-                      : theme.colorScheme.onSurface.withValues(alpha: 0.05),
-                  width: 1,
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.08),
+                  width: 1.5,
                 ),
               ),
               child: Stack(
@@ -208,15 +218,15 @@ class NoteCard extends StatelessWidget {
                     Positioned.fill(
                       child: ClipRRect(
                         child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
+                          filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
                           child: Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                                 colors: [
-                                  Colors.transparent,
-                                  Colors.black.withValues(alpha: 0.4),
+                                  Colors.white.withValues(alpha: 0.05),
+                                  Colors.black.withValues(alpha: 0.3),
                                 ],
                               ),
                             ),

@@ -111,7 +111,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'NOTE CRAFT',
+                            'GOOD ${_getGreeting().toUpperCase()}',
                             style: theme.textTheme.labelLarge?.copyWith(
                               color: theme.colorScheme.primary,
                               fontWeight: FontWeight.w900,
@@ -121,13 +121,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ],
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        'Library',
-                        style: theme.textTheme.displaySmall?.copyWith(
-                          fontWeight: FontWeight.w900,
-                          color: theme.colorScheme.onSurface,
-                          letterSpacing: -1.5,
-                        ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            'Library',
+                            style: theme.textTheme.displaySmall?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              color: theme.colorScheme.onSurface,
+                              letterSpacing: -1.5,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary.withValues(
+                                alpha: 0.1,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              '${filteredNotes.length} notes',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -218,17 +244,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               .where((n) => n.isPinned)
                               .toList();
                           final note = pinnedNotes[index];
-                          return _OpenContainerWrapper(
-                            noteId: note.id,
-                            closedBuilder: (context, openContainer) => NoteCard(
-                              note: note,
-                              labelLookup: labelMap,
-                              defaultWallpaper: defaultWallpaper,
-                              onTap: openContainer,
-                              onLongPress: () {
-                                HapticFeedback.heavyImpact();
-                                _showNoteActions(note);
-                              },
+                          return TweenAnimationBuilder<double>(
+                            duration: Duration(
+                              milliseconds: 400 + (index * 100),
+                            ),
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            curve: Curves.easeOutCubic,
+                            builder: (context, value, child) {
+                              return Opacity(
+                                opacity: value,
+                                child: Transform.translate(
+                                  offset: Offset(0, 30 * (1 - value)),
+                                  child: child,
+                                ),
+                              );
+                            },
+                            child: _OpenContainerWrapper(
+                              noteId: note.id,
+                              closedBuilder: (context, openContainer) =>
+                                  NoteCard(
+                                    note: note,
+                                    labelLookup: labelMap,
+                                    defaultWallpaper: defaultWallpaper,
+                                    onTap: openContainer,
+                                    onLongPress: () {
+                                      HapticFeedback.heavyImpact();
+                                      _showNoteActions(note);
+                                    },
+                                  ),
                             ),
                           );
                         },
@@ -285,17 +328,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             .where((n) => !n.isPinned)
                             .toList();
                         final note = others[index];
-                        return _OpenContainerWrapper(
-                          noteId: note.id,
-                          closedBuilder: (context, openContainer) => NoteCard(
-                            note: note,
-                            labelLookup: labelMap,
-                            defaultWallpaper: defaultWallpaper,
-                            onTap: openContainer,
-                            onLongPress: () {
-                              HapticFeedback.heavyImpact();
-                              _showNoteActions(note);
-                            },
+                        return TweenAnimationBuilder<double>(
+                          duration: Duration(milliseconds: 400 + (index * 100)),
+                          tween: Tween(begin: 0.0, end: 1.0),
+                          curve: Curves.easeOutCubic,
+                          builder: (context, value, child) {
+                            return Opacity(
+                              opacity: value,
+                              child: Transform.translate(
+                                offset: Offset(0, 30 * (1 - value)),
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: _OpenContainerWrapper(
+                            noteId: note.id,
+                            closedBuilder: (context, openContainer) => NoteCard(
+                              note: note,
+                              labelLookup: labelMap,
+                              defaultWallpaper: defaultWallpaper,
+                              onTap: openContainer,
+                              onLongPress: () {
+                                HapticFeedback.heavyImpact();
+                                _showNoteActions(note);
+                              },
+                            ),
                           ),
                         );
                       },
@@ -340,6 +397,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Morning';
+    if (hour < 17) return 'Afternoon';
+    return 'Evening';
+  }
+
   List<Note> _filterNotes(List<Note> notes) {
     List<Note> filtered = notes;
 
@@ -370,63 +434,75 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildEmptyState(bool isSearching) {
     final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer.withValues(
-                  alpha: 0.2,
-                ),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                isSearching ? Icons.search_off_rounded : Icons.note_add_rounded,
-                size: 80,
-                color: theme.colorScheme.primary.withValues(alpha: 0.5),
-              ),
-            ),
-            const SizedBox(height: 32),
-            Text(
-              isSearching ? 'No notes found' : 'Your story starts here',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w900,
-                color: theme.colorScheme.onSurface,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              isSearching
-                  ? "We couldn't find any matches for your search."
-                  : 'Capture what\'s on your mind. Simple, elegant, and forever yours.',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                height: 1.5,
-              ),
-            ),
-            if (!isSearching) ...[
-              const SizedBox(height: 40),
-              FilledButton.icon(
-                onPressed: () => context.push('/editor/new'),
-                icon: const Icon(Icons.add),
-                label: const Text('Create Your First Note'),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 18,
+    return Stack(
+      children: [
+        // Background content
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(32),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer.withValues(
+                      alpha: 0.2,
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isSearching
+                        ? Icons.search_off_rounded
+                        : Icons.note_add_rounded,
+                    size: 80,
+                    color: theme.colorScheme.primary.withValues(alpha: 0.5),
                   ),
                 ),
-              ),
-            ],
-          ],
+                const SizedBox(height: 32),
+                Text(
+                  isSearching ? 'No notes found' : 'Your story starts here',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  isSearching
+                      ? "We couldn't find any matches for your search."
+                      : 'Capture what\'s on your mind. Simple, elegant, and forever yours.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                if (!isSearching)
+                  FilledButton.icon(
+                    onPressed: () => context.push('/editor/new'),
+                    icon: const Icon(Icons.add),
+                    label: const Text('Create Your First Note'),
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 18,
+                      ),
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      elevation: 8,
+                      shadowColor: theme.colorScheme.primary.withValues(
+                        alpha: 0.3,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 

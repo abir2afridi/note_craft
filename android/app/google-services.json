@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "555017411804-kcs6crgi2uoa7qh5mdl9q9k68hoamc5b.apps.googleusercontent.com",
+          "client_id": "555017411804-cbik60pugk2j92fr6b57mf6ffbm1tdqd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.abir2afridi.notecraft",
-            "certificate_hash": "b57d19334ff53a7a7ab5e96d37b3992423b15a78"
+            "certificate_hash": "5339e95f85583b19e30d770e19b42b8fcda7f553"
           }
         },
         {

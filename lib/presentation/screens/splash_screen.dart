@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '../../core/constants/app_constants.dart';
+import '../providers/settings_providers.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -51,8 +52,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     // 1. HARD FAIL-SAFE: The Absolute Deadline
     final hardDeadline = Timer(const Duration(seconds: 6), () {
-      debugPrint('SPLASH TIMEOUT: Force-navigating to home.');
-      if (mounted) context.go('/home');
+      debugPrint('SPLASH TIMEOUT: Force-navigating to login.');
+      if (mounted) context.go('/login');
     });
 
     try {
@@ -88,13 +89,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         if (isFirstLaunch && lastRunVersion.isEmpty) {
           context.go('/onboarding');
         } else {
-          context.go('/home');
+          // Check if user was previously using guest mode
+          final wasGuest = prefs.getBool('was_guest') ?? false;
+          if (wasGuest) {
+            // Re-enable guest mode automatically
+            ref.read(isGuestProvider.notifier).setGuestMode(true);
+            context.go('/home');
+          } else {
+            // Let the router handle authentication redirect
+            context.go('/login');
+          }
         }
       }
     } catch (e) {
       hardDeadline.cancel();
       debugPrint('SPLASH RECOVERY LOGIC TRIGGERED: $e');
-      if (mounted) context.go('/home');
+      if (mounted) context.go('/login');
     }
   }
 
